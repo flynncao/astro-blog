@@ -2,7 +2,7 @@ export const ui = {
   'zh': {
     title: 'Majimay与ザ・ワールド',
     subtitle: 'L\'enfer, c\' est les autres',
-    description: 'Retypeset是一款基于Astro框架的静态博客主题，中文名为重新编排。本主题以活版印字为设计灵感，通过建立全新的视觉规范，对所有页面进行重新编排，打造纸质书页般的阅读体验，再现版式之美。所见皆为细节，方寸尽显优雅。',
+    description: '这个用户很懒，什么描述都没写。',
     posts: '文章',
     tags: '标签',
     about: '关于',
@@ -27,9 +27,9 @@ export const ui = {
     toc: '目次',
   },
   'en': {
-    title: 'Retypeset',
-    subtitle: 'Revive the beauty of typography',
-    description: 'Retypeset is a static blog theme based on the Astro framework. Inspired by Typography, Retypeset establishes a new visual standard and reimagines the layout of all pages, creating a reading experience reminiscent of paper books, reviving the beauty of typography. Details in every sight, elegance in every space.',
+    title: 'Majimay & The World',
+    subtitle: 'L\'enfer, c\' est les autres',
+    description: 'This user is lazy and didn\'t write any description.',
     posts: 'Posts',
     tags: 'Tags',
     about: 'About',
