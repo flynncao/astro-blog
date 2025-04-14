@@ -13,6 +13,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@astrojs/db": "^0.14.10",
     "@astrojs/mdx": "^4.2.3",
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/rss": "^4.0.11",
