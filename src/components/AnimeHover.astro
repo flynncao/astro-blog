@@ -49,7 +49,7 @@
       link.classList.add('underline', 'decoration-dotted', 'decoration-[#f5a623]');
       
       // Show card on hover
-      link.addEventListener('mouseenter', async (e) => {
+      link.addEventListener('mouseenter', async () => {
        // Clear any pending hide timeout
         if (hideTimeout) {
           clearTimeout(hideTimeout);
@@ -74,10 +74,10 @@
         }, 10);
         
         // Get elements
-        const imageEl= hoverContainer.querySelector('.anime-hover-image img')
-        const titleEl = hoverContainer.querySelector('h3');
-        const ratingEl = hoverContainer.querySelector('.text-\\[\\#f5a623\\]');
-        const summaryEl = hoverContainer.querySelector('div.anime-hover-summary');
+        const imageEl: any= hoverContainer.querySelector('.anime-hover-image img')
+        const titleEl: any = hoverContainer.querySelector('h3');
+        const ratingEl: any = hoverContainer.querySelector('.text-\\[\\#f5a623\\]');
+        const summaryEl: any = hoverContainer.querySelector('div.anime-hover-summary');
         if (tagsContainer) tagsContainer.innerHTML = ''; // Clear previous tags
 
         
@@ -139,7 +139,7 @@
             if (summaryEl) summaryEl.textContent = truncatedSummary;
             // Add tags
             if (tagsContainer && data.tags && data.tags.length > 0) {
-              tagsContainer.innerHTML = data.tags.map(tag =>
+              tagsContainer.innerHTML = data.tags.map((tag: any) =>
                 `<span class="inline-block bg-black/20 dark:bg-white/20 text-white dark:text-gray-200 rounded-full px-2 py-1 text-xs font-semibold">${tag.name}</span>`
               ).join('');
             }
@@ -192,14 +192,14 @@
     });
   });
   
-  // Re-initialize when page changes (for Astro View Transitions)
-  document.addEventListener('astro:page-load', () => {
-    // Re-run the initialization code
-    const initScript = document.getElementById('anime-hover-init');
-    if (initScript) {
-      eval(initScript.textContent);
-    }
-  });
+  // // Re-initialize when page changes (for Astro View Transitions)
+  // document.addEventListener('astro:page-load', () => {
+  //   // Re-run the initialization code
+  //   const initScript = document.getElementById('anime-hover-init');
+  //   if (initScript) {
+  //     eval(initScript.textContent);
+  //   }
+  // });
 
 </script>
 
