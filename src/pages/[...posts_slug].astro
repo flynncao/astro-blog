@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
+import AnimeHover from '@/components/AnimeHover.astro'
 import Comments from '@/components/Comments/index.astro'
 import PostDate from '@/components/PostDate.astro'
 import GoBack from '@/components/Widgets/GoBack.astro'
@@ -10,6 +11,7 @@ import Layout from '@/layouts/Layout.astro'
 import { checkPostSlugDuplication } from '@/utils/content'
 import { generateDescription } from '@/utils/description'
 import { getCollection, render } from 'astro:content'
+
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts')
@@ -26,7 +28,6 @@ export async function getStaticPaths() {
   const slugToLangsMap = posts.reduce((map, post) => {
     const slug = post.data.abbrlink || post.id
     const lang = post.data.lang
-
     if (!map.has(slug)) {
       map.set(slug, new Set(lang ? [lang] : allLocales))
     }
@@ -49,7 +50,7 @@ export async function getStaticPaths() {
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   type PathItem = {
     params: { posts_slug: string }
-    props: { post: any, lang: string, supportedLangs: string[] }
+    props: { post: any, lang: string, supportedLangs: string[], isAnimePost: boolean }
   }
 
   const paths: PathItem[] = []
@@ -60,7 +61,7 @@ export async function getStaticPaths() {
     if (import.meta.env.DEV || !post.data.draft) {
       const slug = post.data.abbrlink || post.id
       const lang = post.data.lang
-
+      const isAnimePost = post.data.anime
       if (lang === defaultLocale || lang === '') {
         paths.push({
           params: { posts_slug: `posts/${slug}/` },
@@ -68,6 +69,7 @@ export async function getStaticPaths() {
             post,
             lang: defaultLocale,
             supportedLangs: slugToLangs[slug] || [],
+            isAnimePost
           },
         })
       }
@@ -80,12 +82,14 @@ export async function getStaticPaths() {
       // Process posts with matching language or no language specified
       if ((import.meta.env.DEV || !post.data.draft) && (post.data.lang === lang || post.data.lang === '')) {
         const slug = post.data.abbrlink || post.id
+        const isAnimePost = post.data.anime
         paths.push({
           params: { posts_slug: `${lang}/posts/${slug}/` },
           props: {
             post,
             lang,
             supportedLangs: slugToLangs[slug] || [],
+            isAnimePost
           },
         })
       }
@@ -95,11 +99,10 @@ export async function getStaticPaths() {
   return paths
 }
 
-const { post, lang, supportedLangs } = Astro.props
+const { post, lang, supportedLangs, isAnimePost } = Astro.props
 const description = generateDescription(post, 'meta')
-const { Content, headings, remarkPluginFrontmatter } = await render(post)
+const { Content, headings, remarkPluginFrontmatter} = await render(post)
 ---
-
 <Layout
   postTitle={post.data.title}
   postDescription={description}
@@ -137,6 +140,8 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
     {post.data.toc && <TOC headings={headings} />}
     <!-- Content -->
     <Content />
+    <!-- Include AnimeHover component only for anime posts -->
+    {isAnimePost && <AnimeHover />}
   </article>
 
   <!-- Tags -->

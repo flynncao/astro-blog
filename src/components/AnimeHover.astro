@@ -1,0 +1,275 @@
+---
+// No props required for this component
+// It will find all Bangumi links in the page and add hover functionality
+---
+
+<div id="anime-hover-container" class="fixed z-[1000] pointer-events-none w-[300px] border-box rounded-lg  dark:bg-[#1e1e1e]/95 shadow-lg dark:shadow-md border border-black/10 dark:border-white/10 overflow-hidden backdrop-blur-8px opacity-0 invisible transform translate-y-2 transition-all duration-300 ease-out">
+  <div class="anime-hover-card w-full flex flex-col p-4">
+    <div class="flex ">
+      <div class="anime-hover-image flex-grow max-h-[200px] max-w-[200px] ">
+        <img src="" alt="" class=" object-cover rounded-md">
+      </div>
+      <div class="flex flex-col ml-3">
+        <h3 class="text-base font-bold text-gray-900 dark:text-gray-100 p-0 m-0 mb-1"></h3>
+        <div class="text-[#f5a623] font-bold text-sm p-0 m-0 mb-1 "></div>
+        <div class="anime-hover-tags flex flex-wrap gap-2 overflow-hidden max-h-[90px] max-w-100"></div>
+      </div>
+    </div>
+    <div class="text-sm anime-hover-summary leading-relaxed text-gray-700 dark:text-gray-300 mt-2"></div>
+  </div>
+</div>
+
+<script>
+  // Client-side script that runs in the browser
+  document.addEventListener('DOMContentLoaded', () => {
+    // Find all links to Bangumi
+    const links = document.querySelectorAll('a[href*="bgm.tv/subject/"]');
+    const hoverContainer = document.getElementById('anime-hover-container');
+    const hoverCard = document.querySelector('.anime-hover-card');
+    const tagsContainer = hoverContainer?.querySelector('.anime-hover-tags');
+
+    if (!hoverContainer || !hoverCard || links.length === 0) return;
+    
+    const animeData: any= {};
+    let currentLink: any = null;
+    let hideTimeout: number | null = null;
+
+    links.forEach(link => {
+      // Extract the subject ID from the URL
+      const href = link.getAttribute('href');
+      if (!href) return;
+      
+      const match = href.match(/bgm\.tv\/subject\/(\d+)/);
+      if (!match || !match[1]) return;
+      
+      const subjectId = match[1];
+      
+      // Add data attribute and styling
+      link.setAttribute('data-bgm-id', subjectId);
+      link.classList.add('underline', 'decoration-dotted', 'decoration-[#f5a623]');
+      
+      // Show card on hover
+      link.addEventListener('mouseenter', async (e) => {
+       // Clear any pending hide timeout
+        if (hideTimeout) {
+          clearTimeout(hideTimeout);
+          hideTimeout = null;
+        }
+        
+        currentLink = link;
+        
+        // Position the hover card
+        const rect = link.getBoundingClientRect();
+        
+        // Position the container near the link
+        hoverContainer.style.top = `${ rect.top - 10}px`;
+        hoverContainer.style.left = `${rect.right + 10}px`;
+        // hoverContainer.style.display = 'block';
+        // Make visible but still transparent for animation
+        hoverContainer.style.visibility = 'visible';
+        
+        // Trigger animation after a small delay to ensure CSS transition works
+        setTimeout(() => {
+          hoverContainer.classList.add('hover-visible');
+        }, 10);
+        
+        // Get elements
+        const imageEl= hoverContainer.querySelector('.anime-hover-image img')
+        const titleEl = hoverContainer.querySelector('h3');
+        const ratingEl = hoverContainer.querySelector('.text-\\[\\#f5a623\\]');
+        const summaryEl = hoverContainer.querySelector('div.anime-hover-summary');
+        if (tagsContainer) tagsContainer.innerHTML = ''; // Clear previous tags
+
+        
+        // Show loading state
+        if (imageEl) imageEl.src = '';
+        if (imageEl) imageEl.alt = 'Loading...';
+        if (titleEl) titleEl.textContent = 'Loading...';
+        if (ratingEl) ratingEl.textContent = '评分: ...';
+        if (summaryEl) summaryEl.textContent = 'Loading summary...';
+        if (tagsContainer) tagsContainer.innerHTML = ''; // Clear previous tags
+                
+        try {
+          // Use the browser's fetch API instead of got
+          let data = null;
+          if (animeData[subjectId]) {
+            data = animeData[subjectId];
+          } else {
+            const response = await fetch(`https://api.bgm.tv/v0/subjects/${subjectId}`, {
+              headers: {
+                'accept': 'application/json'
+              }
+            });
+            
+            if (!response.ok) {
+              throw new Error(`Failed to fetch anime data: ${response.status}`);
+            }
+            
+            const responseData = await response.json();
+            
+            data = {
+              name: responseData.name,
+              name_cn: responseData.name_cn,
+              image: responseData.images?.small || '',
+              rating: responseData.rating?.score || 'N/A',
+              summary: responseData.summary || '暂无简介',
+              tags: responseData.tags?.map((tag: any)=> ({ name: tag.name, count: tag.count })) || []
+            };
+            
+            animeData[subjectId] = data;
+          }
+          
+          // Only update if this is still the current link
+          if (link === currentLink) {
+            // const truncatedSummary = data.summary.length > 150 
+            //   ? data.summary.substring(0, 100) + '...' 
+            //   : data.summary;
+            const truncatedSummary = data.summary
+              
+            if (imageEl) {
+              imageEl.src = data.image;
+              imageEl.alt = data.name;
+              imageEl.onerror = function() {
+                this.onerror = null;
+                this.src = 'data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%22100%22 height%3D%22150%22 viewBox%3D%220 0 100 150%22%3E%3Crect width%3D%22100%22 height%3D%22150%22 fill%3D%22%23f0f0f0%22 %2F%3E%3Ctext x%3D%2250%22 y%3D%2275%22 font-family%3D%22Arial%22 font-size%3D%2212%22 text-anchor%3D%22middle%22 fill%3D%22%23999%22 dominant-baseline%3D%22middle%22%3ENo Image%3C%2Ftext%3E%3C%2Fsvg%3E';
+              };
+            }
+            if (titleEl) titleEl.textContent = data.name_cn || data.name;
+            if (ratingEl) ratingEl.textContent = `评分: ${data.rating}`;
+            if (summaryEl) summaryEl.textContent = truncatedSummary;
+            // Add tags
+            if (tagsContainer && data.tags && data.tags.length > 0) {
+              tagsContainer.innerHTML = data.tags.map(tag =>
+                `<span class="inline-block bg-black/20 dark:bg-white/20 text-white dark:text-gray-200 rounded-full px-2 py-1 text-xs font-semibold">${tag.name}</span>`
+              ).join('');
+            }
+          }
+        } catch (error) {
+          console.error(`Failed to fetch anime data for ID ${subjectId}:`, error);
+          if (link === currentLink) {
+            if (titleEl) titleEl.textContent = 'Error';
+            if (summaryEl) summaryEl.textContent = 'Failed to load anime data';
+          }
+        }
+      });
+      
+           // Hide card when mouse leaves
+      link.addEventListener('mouseleave', () => {
+        // Set a timeout to hide the card
+        hideTimeout = window.setTimeout(() => {
+          if (link === currentLink) {
+            // Start fade-out animation
+            hoverContainer.classList.remove('hover-visible');
+            
+            // After animation completes, hide completely
+            setTimeout(() => {
+              if (link === currentLink) {
+                hoverContainer.style.visibility = 'hidden';
+                currentLink = null;
+              }
+            }, 300); // Match the duration in CSS
+          }
+        }, 100);
+      });
+      
+      // Keep card visible when hovering over the card itself
+      hoverContainer.addEventListener('mouseenter', () => {
+        if (hideTimeout) {
+          clearTimeout(hideTimeout);
+          hideTimeout = null;
+        }
+      });
+      
+      hoverContainer.addEventListener('mouseleave', () => {
+        hoverContainer.classList.remove('hover-visible');
+        
+        // After animation completes, hide completely
+        setTimeout(() => {
+          hoverContainer.style.visibility = 'hidden';
+          currentLink = null;
+        }, 300); // Match the duration in CSS
+      });
+    });
+  });
+  
+  // Re-initialize when page changes (for Astro View Transitions)
+  document.addEventListener('astro:page-load', () => {
+    // Re-run the initialization code
+    const initScript = document.getElementById('anime-hover-init');
+    if (initScript) {
+      eval(initScript.textContent);
+    }
+  });
+
+</script>
+
+<style>
+  /* Animation classes */
+  #anime-hover-container {
+    will-change: transform, opacity, backdrop-filter;
+    backface-visibility: hidden;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  
+  #anime-hover-container.hover-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  
+  .anime-hover-image {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+  
+  :global(html.dark) .anime-hover-image {
+    background-color: #333;
+  }
+  
+   .anime-hover-summary {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.5em; /* Approximately 3 lines of text */
+  }
+  
+  /* Animation classes */
+  #anime-hover-container {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+  
+  #anime-hover-container.hover-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Add a subtle entrance animation for tags */
+  .anime-hover-tags span {
+    animation: tagFadeIn 0.3s ease-out forwards;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  
+  .anime-hover-tags span:nth-child(1) { animation-delay: 0.05s; }
+  .anime-hover-tags span:nth-child(2) { animation-delay: 0.1s; }
+  .anime-hover-tags span:nth-child(3) { animation-delay: 0.15s; }
+  .anime-hover-tags span:nth-child(4) { animation-delay: 0.2s; }
+  .anime-hover-tags span:nth-child(5) { animation-delay: 0.25s; }
+  
+  @keyframes tagFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+</style>
+
+
