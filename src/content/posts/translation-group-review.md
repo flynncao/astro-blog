@@ -6,6 +6,7 @@ tags:
   - translation
   - japanese
   - ACGN
+anime: true
 ---
 
 纠结在现阶段怎么给喜欢的番剧挑选合适的中文字幕组，看这篇就对了！
