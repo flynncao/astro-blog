@@ -1,5 +1,5 @@
 ---
-title: 未雪之章与渐暖的学术钟摆
+title: 2025冬季总结
 published: 2025-02-28T13:50:36+08:00
 draft: false
 tags:
@@ -8,6 +8,7 @@ tags:
   - reviews
   - 书评
   - 总结
+  - summary
 lang: zh
 pin: 0
 ---
