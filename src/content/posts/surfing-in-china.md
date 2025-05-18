@@ -1,7 +1,8 @@
 ---
 title: 长期更新｜境外服务食用、资源下载管理指南
 published: 2025-03-12T13:50:36+08:00
-draft: false
+updated: 2025-05-07T13:50:36+08:00
+draft: true
 tags:
   - gfw
   - vpn
@@ -113,6 +114,27 @@ Offline Mode: no
 
 [chsrc](https://github.com/RubyMetric/chsrc) 基本上可以覆盖常用的编程语言（node, python) 及winget、bash等系统软件包管理工具。
 
+关于Docker的镜像，除了用chsrc找源也可以从在[这里](https://github.com/dongyubin/DockerHub)搜集一些最近可用的。例如这是我现在用的镜像源：
+
+```json5
+// Docker Desktop -> Settings -> DockerEngine Configuration
+"registry-mirrors": [
+    "https://docker.1ms.run",
+    "https://docker.mybacc.com",
+    "https://dytt.online",
+    "https://lispy.org",
+    "https://docker.xiaogenban1993.com",
+    "https://docker.yomansunter.com",
+    "https://aicarbon.xyz",
+    "https://666860.xyz",
+    "https://docker.zhai.cm",
+    "https://a.ussh.net",
+    "https://hub.littlediary.cn",
+    "https://hub.rat.dev",
+    "https://docker.m.daocloud.io"
+   ]
+```
+
 ### git（GitHub）
 
 而作为程序员用的最多的SVN，我推荐直接修改命令来避免直接重定向git到gitclone.com或者其他镜像网站的debuff (如git push在private库定位不到repo的git地址)
@@ -152,7 +174,9 @@ Remove-Item Alias:gp -Force -ErrorAction Ignore
 
 目前我采用的方案，使用`huggingface-cli` 下载dataset和model。
 
-https://zhuanlan.zhihu.com/p/684178533
+只需要在系统环境变量中增加`HF_ENDPOINT`值为`https://hf-mirror.com`的环境变量即可。
+
+关于使用hf-cli下载数据集和模型的注意事项，可以看我[这篇博文](https://blog.csdn.net/YuriChao/article/details/147629193)。
 
 ## 资源下载
 
@@ -194,7 +218,14 @@ https://zhuanlan.zhihu.com/p/684178533
 
 ### 软件
 
-只列出几个我最常用的：
-
-* [果壳剥壳](https://www.ghxi.com/)
+* [果壳剥壳](https://www.ghxi.com/)，还提供一些正版打折途径。
 * [432Down](https://www.423down.com/)
+* [Adobe全家桶直链](https://flowus.cn/share/ab4b6b86-34a6-4aa0-a679-b4a221b8e41d)
+
+### 游戏
+
+综合的[BT整合站](https://game.nite07.com/)或者[毛子的站](https://rutracker.net/forum/index.php)。我个人用[Fitgirl Repack](https://fitgirl-repacks.site/)版本比较多。
+
+习惯用度盘的可以移步[游戏小乐园](https://www.gamer520.com/)。
+
+喜欢领epic游戏的可以关注这个[Telegram Channel](https://t.me/epicfreegames)。
