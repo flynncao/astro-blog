@@ -1,5 +1,5 @@
 ---
-title: 2024年度总结：从失眠河谷到价值观平原
+title: 2024年度总结
 published: 2024-12-31T16:07:41+08:00
 cover: /img/2024-recap-cover.jpg
 lang: zh
