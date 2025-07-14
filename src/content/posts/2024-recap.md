@@ -5,6 +5,7 @@ cover: /img/2024-recap-cover.jpg
 lang: zh
 tags:
   - summary
+draft: true
 ---
 
 大家的2024过的怎么样呢？不论经历了是升学、升职、恋爱、结婚等幸福和收获，抑或是捱过失业、降薪、破产等低谷，我们在切身体验的2024都将过去。

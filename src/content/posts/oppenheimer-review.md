@@ -5,6 +5,7 @@ lang: zh
 tags:
   - 电影
   - 影评
+draft: true
 ---
 
 [查看原文](/en/posts/oppenheimer-review-en/)
