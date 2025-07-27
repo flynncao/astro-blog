@@ -21,8 +21,8 @@
 
 <script>
 // Client-side script that runs in the browser
-document.addEventListener('DOMContentLoaded', () => {
-  // Find all links to Bangumi
+// Find all links to Bangumi
+function initializeAnimeHover() {
   const links = document.querySelectorAll('a[href*="bgm.tv/subject/"]')
   const hoverContainer = document.getElementById('anime-hover-container')
   const hoverCard = document.querySelector('.anime-hover-card')
@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentLink: any = null
   let hideTimeout: number | null = null
 
-  links.forEach((link) => {
-    // Extract the subject ID from the URL
+  links.forEach((link: any) => {
+  // Extract the subject ID from the URL
     const href = link.getAttribute('href')
     if (!href)
       return
@@ -49,11 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add data attribute and styling
     link.setAttribute('data-bgm-id', subjectId)
-    link.classList.add('underline', 'decoration-dotted', 'decoration-[#f5a623]')
-
+    link.classList.add('underline', 'decoration-dotted')
+    link.style.textDecorationColor = '#f5a623' // sky-500 color
     // Show card on hover
     link.addEventListener('mouseenter', async () => {
-      // Clear any pending hide timeout
+    // Clear any pending hide timeout
       if (hideTimeout) {
         clearTimeout(hideTimeout)
         hideTimeout = null
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tagsContainer.innerHTML = '' // Clear previous tags
 
       try {
-        // Use the browser's fetch API instead of got
+      // Use the browser's fetch API instead of got
         let data = null
         if (animeData[subjectId]) {
           data = animeData[subjectId]
@@ -131,9 +131,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Only update if this is still the current link
         if (link === currentLink) {
-          // const truncatedSummary = data.summary.length > 150
-          //   ? data.summary.substring(0, 100) + '...'
-          //   : data.summary;
+        // const truncatedSummary = data.summary.length > 150
+        //   ? data.summary.substring(0, 100) + '...'
+        //   : data.summary;
           const truncatedSummary = data.summary
 
           if (imageEl) {
@@ -171,10 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Hide card when mouse leaves
     link.addEventListener('mouseleave', () => {
-      // Set a timeout to hide the card
+    // Set a timeout to hide the card
       hideTimeout = window.setTimeout(() => {
         if (link === currentLink) {
-          // Start fade-out animation
+        // Start fade-out animation
           hoverContainer.classList.remove('hover-visible')
 
           // After animation completes, hide completely
@@ -206,6 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300) // Match the duration in CSS
     })
   })
+}
+
+initializeAnimeHover()
+
+document.addEventListener('astro:page-load', () => {
+  initializeAnimeHover()
 })
 
 // // Re-initialize when page changes (for Astro View Transitions)
@@ -218,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // });
 </script>
 
-<style>
+<style data-astro-rerun>
   /* Animation classes */
   #anime-hover-container {
     will-change: transform, opacity, backdrop-filter;
