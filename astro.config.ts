@@ -1,6 +1,7 @@
 import mdx from '@astrojs/mdx'
 import partytown from '@astrojs/partytown'
 import sitemap from '@astrojs/sitemap'
+import vue from '@astrojs/vue'
 import compress from 'astro-compress'
 import robotsTxt from 'astro-robots-txt'
 import { defineConfig } from 'astro/config'
@@ -11,6 +12,7 @@ import remarkMath from 'remark-math'
 import UnoCSS from 'unocss/astro'
 import { themeConfig } from './src/config'
 import { langMap } from './src/i18n/config'
+
 import { remarkReadingTime } from './src/plugins/remark-reading-time'
 
 const url = themeConfig.site.url
@@ -32,20 +34,17 @@ export default defineConfig({
     })),
     defaultLocale: locale,
   },
-  integrations: [
-    UnoCSS({
-      injectReset: true,
-    }),
-    mdx(),
-    partytown({
-      config: {
-        forward: ['dataLayer.push'],
-      },
-    }),
-    sitemap(),
-    robotsTxt(),
-    compress(),
-  ],
+  integrations: [UnoCSS({
+    injectReset: true,
+  }), mdx(), partytown({
+    config: {
+      forward: ['dataLayer.push'],
+    },
+  }), sitemap(), robotsTxt(), compress(), vue(
+    // {
+    //   appEntrypoint: './src/pages/_app.vue',
+    // },
+  )],
   markdown: {
     remarkPlugins: [
       remarkMath,
