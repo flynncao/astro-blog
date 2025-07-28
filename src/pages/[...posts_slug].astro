@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
 import AnimeHover from '@/components/AnimeHover.astro'
 import Comment from '@/components/Comment/Index.astro'
 import PostDate from '@/components/PostDate.astro'
@@ -10,7 +11,6 @@ import { allLocales, defaultLocale, moreLocales } from '@/config'
 import Layout from '@/layouts/Layout.astro'
 import { checkPostSlugDuplication } from '@/utils/content'
 import { getPostDescription } from '@/utils/description'
-import { getCollection, render } from 'astro:content'
 
 
 export async function getStaticPaths() {
@@ -67,7 +67,7 @@ export async function getStaticPaths() {
         props: {
           post,
           lang: defaultLocale,
-          isAnimePost: false,
+          isAnimePost: post.data.anime ?? false,
           supportedLangs: slugToLangs[slug] ?? [],
         },
       })
@@ -81,7 +81,8 @@ export async function getStaticPaths() {
       if ((import.meta.env.DEV || !post.data.draft)
         && (post.data.lang === lang || post.data.lang === '')) {
         const slug = post.data.abbrlink || post.id
-        const isAnimePost = post.data.anime
+        const isAnimePost = post.data.anime ?? false
+        console.log(`Processing post: ${slug} in language: ${lang}, isAnimePost: ${isAnimePost}`)
         paths.push({
           params: { posts_slug: `${lang}/posts/${slug}/` },
           props: {
@@ -99,6 +100,7 @@ export async function getStaticPaths() {
 }
 
 const { post, lang, supportedLangs, isAnimePost } = Astro.props
+console.log(`Rendering post: ${post.id} in language: ${lang}, isAnimePost: ${isAnimePost}`)
 const description = getPostDescription(post, 'meta')
 const { Content, headings, remarkPluginFrontmatter } = await render(post)
 ---
