@@ -1,16 +1,16 @@
 ---
 import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
 import AnimeHover from '@/components/AnimeHover.astro'
-import Comments from '@/components/Comments/index.astro'
+import Comment from '@/components/Comment/Index.astro'
 import PostDate from '@/components/PostDate.astro'
-import GoBack from '@/components/Widgets/GoBack.astro'
+import TagList from '@/components/TagList.astro'
+import BackButton from '@/components/Widgets/BackButton.astro'
 import TOC from '@/components/Widgets/TOC.astro'
 import { allLocales, defaultLocale, moreLocales } from '@/config'
-import { getTagPath } from '@/i18n/path'
 import Layout from '@/layouts/Layout.astro'
 import { checkPostSlugDuplication } from '@/utils/content'
-import { generateDescription } from '@/utils/description'
-import { getCollection, render } from 'astro:content'
+import { getPostDescription } from '@/utils/description'
 
 
 export async function getStaticPaths() {
@@ -31,7 +31,7 @@ export async function getStaticPaths() {
     if (!map.has(slug)) {
       map.set(slug, new Set(lang ? [lang] : allLocales))
     }
- else if (lang) {
+    else if (lang) {
       map.get(slug)?.add(lang)
     }
 
@@ -46,8 +46,8 @@ export async function getStaticPaths() {
       [...langs].sort((a, b) => allLocales.indexOf(a) - allLocales.indexOf(b)),
     ]),
   )
-
   // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
   type PathItem = {
     params: { posts_slug: string }
     props: { post: any, lang: string, supportedLangs: string[], isAnimePost: boolean }
@@ -58,21 +58,19 @@ export async function getStaticPaths() {
   // Default locale
   posts.forEach((post: CollectionEntry<'posts'>) => {
     // Show drafts in dev mode only
-    if (import.meta.env.DEV || !post.data.draft) {
+    if ((import.meta.env.DEV || !post.data.draft)
+      && (post.data.lang === defaultLocale || post.data.lang === '')) {
       const slug = post.data.abbrlink || post.id
-      const lang = post.data.lang
-      const isAnimePost = post.data.anime
-      if (lang === defaultLocale || lang === '') {
-        paths.push({
-          params: { posts_slug: `posts/${slug}/` },
-          props: {
-            post,
-            lang: defaultLocale,
-            supportedLangs: slugToLangs[slug] || [],
-            isAnimePost
-          },
-        })
-      }
+
+      paths.push({
+        params: { posts_slug: `posts/${slug}/` },
+        props: {
+          post,
+          lang: defaultLocale,
+          isAnimePost: post.data.anime ?? false,
+          supportedLangs: slugToLangs[slug] ?? [],
+        },
+      })
     }
   })
 
@@ -80,16 +78,18 @@ export async function getStaticPaths() {
   moreLocales.forEach((lang: string) => {
     posts.forEach((post: CollectionEntry<'posts'>) => {
       // Process posts with matching language or no language specified
-      if ((import.meta.env.DEV || !post.data.draft) && (post.data.lang === lang || post.data.lang === '')) {
+      if ((import.meta.env.DEV || !post.data.draft)
+        && (post.data.lang === lang || post.data.lang === '')) {
         const slug = post.data.abbrlink || post.id
-        const isAnimePost = post.data.anime
+        const isAnimePost = post.data.anime ?? false
+        console.log(`Processing post: ${slug} in language: ${lang}, isAnimePost: ${isAnimePost}`)
         paths.push({
           params: { posts_slug: `${lang}/posts/${slug}/` },
           props: {
             post,
             lang,
-            supportedLangs: slugToLangs[slug] || [],
-            isAnimePost
+            isAnimePost,
+            supportedLangs: slugToLangs[slug] ?? [],
           },
         })
       }
@@ -100,8 +100,9 @@ export async function getStaticPaths() {
 }
 
 const { post, lang, supportedLangs, isAnimePost } = Astro.props
-const description = generateDescription(post, 'meta')
-const { Content, headings, remarkPluginFrontmatter} = await render(post)
+console.log(`Rendering post: ${post.id} in language: ${lang}, isAnimePost: ${isAnimePost}`)
+const description = getPostDescription(post, 'meta')
+const { Content, headings, remarkPluginFrontmatter } = await render(post)
 ---
 <Layout
   postTitle={post.data.title}
@@ -109,15 +110,15 @@ const { Content, headings, remarkPluginFrontmatter} = await render(post)
   postSlug={post.id}
   supportedLangs={supportedLangs}
 >
-  <article class="heti mb-12.6">
+  <article class="heti">
     <div class="relative">
       <!-- Go Back Button On Desktop -->
-      <GoBack />
+      <BackButton />
       <!-- Title -->
       <h1 class="post-title">
         <span
-          transition:name={`post-${post.data.abbrlink || post.id}-${lang}`}
-          data-disable-transition-on-theme
+          transition:name={`post-${post.data.abbrlink || post.id}${lang ? `-${lang}` : ''}`}
+          data-disable-theme-transition
         >
           {post.data.title}
         </span>
@@ -126,9 +127,10 @@ const { Content, headings, remarkPluginFrontmatter} = await render(post)
 
     <!-- Date -->
     <div
-      class="mb-16.3 block c-primary font-time"
-      transition:name={`time-${post.data.abbrlink || post.id}-${lang}`}
-      data-disable-transition-on-theme
+      id="post-date"
+      class="mb-17.2 block c-primary font-time"
+      transition:name={`time-${post.data.abbrlink || post.id}${lang ? `-${lang}` : ''}`}
+      data-disable-theme-transition
     >
       <PostDate
         date={post.data.published}
@@ -139,25 +141,21 @@ const { Content, headings, remarkPluginFrontmatter} = await render(post)
     <!-- TOC -->
     {post.data.toc && <TOC headings={headings} />}
     <!-- Content -->
-    <Content />
-    <!-- Include AnimeHover component only for anime posts -->
+    <div id="post-content">
+      <Content />
+      <!-- Copyright -->
+      <div id="post-copyright" />
+      <!-- Tag List -->
+      {post.data.tags?.length > 0 && (
+        <div class="mt-12.6 uno-decorative-line" />
+        <TagList
+          tags={post.data.tags}
+          lang={lang}
+        />
+      )}
+      <!-- Comment -->
+      <Comment />
+    </div>
     {isAnimePost && <AnimeHover />}
   </article>
-
-  <!-- Tags -->
-  {post.data.tags && post.data.tags.length > 0 && (
-    <div class="uno-decorative-line"></div>
-    <div class="uno-tags-wrapper">
-      {post.data.tags.map((tag: string) => (
-        <a
-          href={getTagPath(tag, lang)}
-          class="uno-tags-style"
-        >
-          {tag}
-        </a>
-      ))}
-    </div>
-  )}
-  <!-- Comments -->
-  <Comments />
 </Layout>
