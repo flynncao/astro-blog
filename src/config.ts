@@ -29,11 +29,13 @@ export const themeConfig: ThemeConfig = {
       primary: 'oklch(0.24 0.053 261.24)',
       secondary: 'oklch(0.39 0.053 261.24)',
       background: 'oklch(1 0 0)',
+      highlight: 'oklch(0.93 0.195089 103.2532 / 0.5)',
     },
     dark: {
       primary: 'oklch(0.92 0 0)',
       secondary: 'oklch(0.79 0 0)',
       background: 'oklch(0.24 0.016 265.21)',
+      highlight: 'oklch(0.93 0.195089 103.2532 / 0.2)',
     },
   },
   // COLOR SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
@@ -41,7 +43,7 @@ export const themeConfig: ThemeConfig = {
   // GLOBAL SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START
   global: {
     // default language
-    locale: 'zh', // zh, zh-tw, ja, en, es, ru
+    locale: 'zh', // de, en, es, fr, ja, ko, pl, pt, ru, zh, zh-tw
     // more languages
     // not fill in the locale code above again
     moreLocales: ['en'], // ['zh', 'zh-tw', 'ja', 'en', 'es', 'ru']
@@ -49,10 +51,12 @@ export const themeConfig: ThemeConfig = {
     fontStyle: 'sans', // sans, serif
     // date format for posts
     dateFormat: 'YYYY-MM-DD', // YYYY-MM-DD, MM-DD-YYYY, DD-MM-YYYY, MONTH DAY YYYY, DAY MONTH YYYY
-    // gap between title and subtitle
-    titleGap: 2, // 1, 2, 3
-    // enable KaTeX for mathematical formulas rendering
+    // table of contents for posts
+    toc: true, // true, false
+    // KaTeX math rendering
     katex: true, // true, false
+    // reduce motion
+    reduceMotion: false, // true, false
   },
   // GLOBAL SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
 
@@ -60,7 +64,26 @@ export const themeConfig: ThemeConfig = {
   comment: {
     // enable comment system
     enabled: true, // true, false
-    // waline comment system
+    // giscus
+    // https://giscus.app/
+    giscus: {
+      repo: '',
+      repoId: '',
+      category: '',
+      categoryId: '',
+      mapping: 'pathname',
+      strict: '0',
+      reactionsEnabled: '1',
+      emitMetadata: '0',
+      inputPosition: 'bottom',
+    },
+    // twikoo
+    // https://twikoo.js.org/
+    twikoo: {
+      envId: '',
+      // version: frontend version can be changed in package.json
+    },
+    // waline
     // https://waline.js.org/en/
     waline: {
       // server url
@@ -126,7 +149,7 @@ export const themeConfig: ThemeConfig = {
     links: [
       {
         name: 'RSS',
-        url: '/rss.xml', // rss.xml, atom.xml
+        url: '/atom.xml', // or /rss.xml
       },
       {
         name: 'GitHub',
@@ -137,9 +160,9 @@ export const themeConfig: ThemeConfig = {
         url: 'https://x.com/real_flynncao',
       },
       // {
-      //   name: 'Email',
-      //   url: 'https://example@gmail.com',
-      // }
+      //   name: 'X',
+      //   url: 'https://x.com/radishzz_',
+      // },
     ],
     // year of website start
     startYear: 2023,
@@ -148,16 +171,12 @@ export const themeConfig: ThemeConfig = {
 
   // PRELOAD SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START
   preload: {
-    // link prefetch
-    // docs: https://docs.astro.build/en/guides/prefetch/#prefetch-strategies
-    linkPrefetch: 'viewport', // hover, tap, viewport, load
-    // comment server url
-    commentURL: 'https://retypeset-comment.radishzz.cc',
     // image hosting url
-    imageHostURL: 'https://image.radishzz.cc',
+    // optimize remote images in Markdown files to avoid cumulative layout shift
+    imageHostURL: '',
     // custom google analytics js
     // for users who route analytics javascript to a customized domain
-    // See https://gist.github.com/xiaopc/0602f06ca465d76bd9efd3dda9393738
+    // see https://gist.github.com/xiaopc/0602f06ca465d76bd9efd3dda9393738
     customGoogleAnalyticsJS: '',
     // custom umami analytics js
     // for users who deploy umami on their own, or route analytics javascript to a customized domain
