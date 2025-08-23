@@ -2,7 +2,7 @@
 title: 长期更新｜境外服务食用、资源下载管理指南
 published: 2025-03-12T13:50:36+08:00
 updated: 2025-05-07T13:50:36+08:00
-draft: true
+draft: false
 tags:
   - gfw
   - vpn
