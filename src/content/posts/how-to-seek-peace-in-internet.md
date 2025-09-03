@@ -5,6 +5,7 @@ cover: /img/2024-recap-cover.jpg
 lang: zh
 tags:
   - prose
+  - psychology
 draft: true
 ---
 

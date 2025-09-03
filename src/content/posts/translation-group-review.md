@@ -5,7 +5,11 @@ lang: zh
 tags:
   - translation
   - japanese
+  - anime
   - ACGN
+  - 日语
+  - 翻译
+  - 二次元
 anime: true
 ---
 
