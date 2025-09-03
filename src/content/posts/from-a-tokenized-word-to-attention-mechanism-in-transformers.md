@@ -1,7 +1,7 @@
 ---
 title: 从词元化到Transformer中的注意力机制
 published: 2025-09-03T23:59:36+08:00
-draft: true
+draft: false
 tags:
   - NLP
   - 大语言模型

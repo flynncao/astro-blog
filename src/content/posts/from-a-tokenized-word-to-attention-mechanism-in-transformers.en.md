@@ -1,7 +1,7 @@
 ---
 title: From a tokenized word to attention mechanism in Transformers
 published: 2025-09-03T23:59:36+08:00
-draft: true
+draft: false
 tags:
   - NLP
   - LLMs
