@@ -124,7 +124,7 @@ export const themeConfig: ThemeConfig = {
     },
     // google analytics
     // https://analytics.google.com
-    googleAnalyticsID: '',
+    googleAnalyticsID: 'G-32WSSXTQC0',
     // umami analytics
     // https://cloud.umami.is
     umamiAnalyticsID: '520af332-bfb7-4e7c-9386-5f273ee3d697',
@@ -132,9 +132,9 @@ export const themeConfig: ThemeConfig = {
     // https://follow.is/
     follow: {
       // feed ID
-      feedID: '',
+      feedID: '136404697547121664',
       // user ID
-      userID: '',
+      userID: '65581746568685568',
     },
     // apiflash access key
     // automatically generate website screenshots for open graph images
