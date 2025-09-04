@@ -4,8 +4,12 @@ published: 2023-05-13T00:00:00.000+00:00
 author: flynncao
 lang: zh
 tags:
-  - English
-  - Reading
+  - english
+  - 词汇
+  - language-learning
+  - 语言学习
+  - 英语
+  - 外语
 ---
 
 > 原始文章迁移自Xlog.

@@ -6,6 +6,9 @@ draft: false
 tags:
   - gfw
   - vpn
+  - cloud-service
+  - 云服务
+  - 软件
 category: guide
 lang: zh
 ---

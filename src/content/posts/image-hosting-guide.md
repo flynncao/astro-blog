@@ -5,6 +5,7 @@ updated: 2025-04-16T00:00:00.000+00:00
 tags:
   - self-hosting
   - 私有云
+  - image-hosting
 categories:
   - tutorial
 keywords: 私有云,图床
@@ -111,7 +112,7 @@ Cloudflare 仅接受 Visa、Mastercard、American Express、Discover、PayPal �
 ![](https://cfr2-img.flynncao.uk/picgo4-202412122147085.png)
 这里我会一一说明来源：
 
-- AccountID: 这个是Cloudflare对象存储的个人id，和桶本身无关，可以在【R2对象存储】主页面右侧的【账户详细信息】下找到。
+- AccountID: 这个是Cloudflare对象存储的个人id，和桶本身无关，可以在【R2对象存储】主页面右侧的【API】然后选择【Use R2 with APIs】就能看到如图的Account ID和Secret API了。
 
 ![](https://cfr2-img.flynncao.uk/accountid-202412122147418.png)
 
@@ -234,3 +235,5 @@ jsdeliver提供免费托管静态资源并提供分发加速，经过测试只�
 ## 参考
 
 https://www.yuhuizhen.com/2022/11/27/image-bed/index.html
+
+https://guolongji.xyz/post/picgo-best-practice/

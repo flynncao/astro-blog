@@ -3,8 +3,8 @@ title: 浏览器插件开发简易指南
 published: 2023-05-04T13:50:36+08:00
 draft: false
 tags:
-  - javascript
   - frontend
+  - browser-ext
   - browser
 category: code
 lang: zh
