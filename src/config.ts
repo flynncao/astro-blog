@@ -159,13 +159,21 @@ export const themeConfig: ThemeConfig = {
         name: 'Twitter',
         url: 'https://x.com/real_flynncao',
       },
-      // {
-      //   name: 'X',
-      //   url: 'https://x.com/radishzz_',
-      // },
+      {
+        name:'Telegram',
+        url:'https://t.me/flynncao',
+      },
+      {
+        name: 'WeChat',
+        url: 'https://cfr2-img.flynncao.uk/IMG_0349.JPG',
+      },
+      {
+        name: 'Email',
+        url: 'mailto:realflynncao@gmail.com'
+      }
     ],
     // year of website start
-    startYear: 2023,
+    startYear: 2021,
   },
   // FOOTER SETTINGS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END
 
