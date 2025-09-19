@@ -149,7 +149,7 @@ export const themeConfig: ThemeConfig = {
     links: [
       {
         name: 'RSS',
-        url: '/atom.xml', // or /rss.xml
+        url: '/rss.xml', // or /rss.xml
       },
       {
         name: 'GitHub',
@@ -160,8 +160,8 @@ export const themeConfig: ThemeConfig = {
         url: 'https://x.com/real_flynncao',
       },
       {
-        name:'Telegram',
-        url:'https://t.me/flynncao',
+        name: 'Telegram',
+        url: 'https://t.me/flynncao',
       },
       {
         name: 'WeChat',
@@ -169,8 +169,8 @@ export const themeConfig: ThemeConfig = {
       },
       {
         name: 'Email',
-        url: 'mailto:realflynncao@gmail.com'
-      }
+        url: 'mailto:realflynncao@gmail.com',
+      },
     ],
     // year of website start
     startYear: 2021,
