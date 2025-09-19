@@ -1,6 +1,6 @@
 import type { APIContext } from 'astro'
-import { generateRSS } from '@/utils/feed'
+import { generateRSSRaw } from '@/utils/feed'
 
 export async function GET(context: APIContext) {
-  return generateRSS(context)
+  return generateRSSRaw(context)
 }

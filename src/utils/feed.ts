@@ -208,6 +208,18 @@ export async function generateFeed({ lang }: { lang?: string } = {}) {
 }
 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// Generate RSS 2.0 format feed without formatting
+export async function generateRSSRaw(context: APIContext) {
+  const feed = await generateFeed({
+    lang: context.params?.lang as string | undefined,
+  })
+
+  return new Response(feed.rss2(), {
+    headers: {
+      'Content-Type': 'application/rss+xml; charset=utf-8',
+    },
+  })
+}
 // Generate RSS 2.0 format feed
 export async function generateRSS(context: APIContext) {
   const feed = await generateFeed({
