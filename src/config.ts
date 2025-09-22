@@ -164,10 +164,6 @@ export const themeConfig: ThemeConfig = {
         url: 'https://t.me/flynncao',
       },
       {
-        name: 'WeChat',
-        url: 'https://cfr2-img.flynncao.uk/IMG_0349.JPG',
-      },
-      {
         name: 'Email',
         url: 'mailto:realflynncao@gmail.com',
       },
