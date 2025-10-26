@@ -1,6 +1,7 @@
 import mdx from '@astrojs/mdx'
 import partytown from '@astrojs/partytown'
 import sitemap from '@astrojs/sitemap'
+import vue from '@astrojs/vue'
 import Compress from 'astro-compress'
 import { defineConfig } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
@@ -28,7 +29,7 @@ const imageConfig = imageHostURL
 export default defineConfig({
   site: siteUrl,
   base: '/',
-  trailingSlash: 'always',
+  trailingSlash: 'ignore',
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport', // hover, tap, viewport, load
@@ -59,6 +60,11 @@ export default defineConfig({
       JavaScript: true,
       SVG: false,
     }),
+    vue(
+      // {
+      //   appEntrypoint: './src/pages/_app.vue',
+      // },
+    ),
   ],
   markdown: {
     remarkPlugins: [

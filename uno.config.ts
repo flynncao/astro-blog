@@ -2,6 +2,7 @@ import type { Preset } from 'unocss'
 import {
   defineConfig,
   presetAttributify,
+  presetIcons,
   presetWind3,
   transformerDirectives,
   transformerVariantGroup,
@@ -29,6 +30,7 @@ export default defineConfig({
         },
       },
     }) as Preset<object>,
+    presetIcons(),
   ],
   theme: {
     colors: {
