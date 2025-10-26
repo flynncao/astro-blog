@@ -1,0 +1,18 @@
+---
+import Photo from '../components/Photo.vue'
+import Layout from './Layout.astro'
+
+const { frontmatter } = Astro.props
+
+// This maps the standard Markdown img to your Photo component
+export const components = {
+  img: Photo,
+};
+---
+
+<Layout postTitle={frontmatter.title}>
+  <article class="prose">
+    <slot />
+  </article>
+
+</Layout>
