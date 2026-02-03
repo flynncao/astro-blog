@@ -160,6 +160,10 @@ export const themeConfig: ThemeConfig = {
         url: 'https://x.com/real_flynncao',
       },
       {
+        name: 'Goodreads',
+        url: 'https://www.goodreads.com/user/show/165341751-flynn-cao',
+      },
+      {
         name: 'Telegram',
         url: 'https://t.me/flynncao',
       },

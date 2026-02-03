@@ -22,12 +22,12 @@ lang: zh
 这里只有一个字段需要注意：
 ```json
 "type": "module" // or "commonjs" or " " 
- ```
+```
  使用 "type: module" 会：
- 
+
 • 强制所有的 `.js/.ts` 被识别为es-module
 • 禁止这些文件里的require()语法
- 
+
 使用 "type: commonjs" 会：
 
 • 强制所有的 `.js/.ts` 被识别为commonjs
@@ -50,7 +50,7 @@ lang: zh
 - lib：type-checking相关，例如你的代码需要在浏览器中运行，那么想要 `window` 等对象在IDE也能被识别不报错，这里就要叠加上上 `DOM`  。
     > 一切原生不支持Typescript的库仍需要实用`npm add -D @types/eslint` 等形式手动安装types （如何解决“老项目的导入地狱”? 请待下回分解）
 - moduleresolution: 控制TS在编译过程如何在模块里寻找源文件（算法），node16, node22必须显示规定file extension无论js/ts, 如果切换为bundler,一般都会给通过如tsup和vite（这里会要求你把module也改为esnext等）
-    
+  
 
 ## jest(ts-jest)
 
@@ -109,6 +109,8 @@ ts-jest给出了如下直到
     "noEmit": true,
     "isolatedModules": true,
     "paths": {},
+    // 推荐设置
+    "skipLibCheck": true // 可以规避不同包之间的type定义冲突，缩短编译时间
     // 这些都是默认配置
     "alwaysStrict": true,
     "allowUnreachableCode": false,
