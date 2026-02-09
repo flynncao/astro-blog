@@ -1,5 +1,5 @@
 ---
-title: Understanding Path Wildcards and Resolution Across Git, Node.js, and Python
+title: 理解Git、Node.js与Python中的路径通配符与解析机制
 published: 2026-02-08T23:59:36+08:00
 updated: 2026-02-08T23:59:36+08:00
 draft: false
@@ -10,88 +10,89 @@ tags:
   - bash
   - linux
   - path
-  - path resolution
+  - 路径解析
 category: code
-lang: en
+lang: zh
 ---
+
 ## Gitignore
 
-Let’s start with something every programmer deals with: `.gitignore`. We already know some common conventions:
+让我们从每个程序员都会接触的`.gitignore`开始。我们已经了解一些常见约定：
 
-- match globally
-  - `/folderName` matches the folder directly under the repository root and all files under that folder (A)
-  - `folderName/` matches folders with that exact name at any directory level (B)
-  - `folderA/B/` only matches the `B` folder under `folderA`
-  - `folderA/B` matches both `B.js` and the `B` directory
+- 全局匹配
+  - `/folderName` 匹配仓库根目录下的同名文件夹及其所有子文件
+  - `folderName/` 匹配任意目录层级的同名文件夹
+  - `folderA/B/` 仅匹配`folderA`下的`B`文件夹
+  - `folderA/B` 同时匹配`B.js`文件和`B`目录
 
-By adding a trailing slash to a pattern, we specify that we want to match a directory, not a file. You might argue that this distinction is unnecessary because a directory and a file cannot coexist under the same parent directory with the same name (for example, both named `temp` without an extension). However, consider the following example:
+通过在模式末尾添加斜杠，我们指定要匹配的是目录而非文件。你可能会认为这种区分没有必要，因为目录和文件无法在相同父目录下以相同名称共存（例如都叫`temp`且无扩展名）。但考虑以下示例：
 
 ![](https://cfr2-img.flynncao.uk/202602082253369.png)
 
-Here, there are literally two items with the same name, and Git has no problem handling them with simple ignore patterns. Now consider the following patterns:
+这里确实存在两个同名项，而Git通过简单的忽略模式就能处理它们。现在观察以下模式：
 
 ```
-/**/2025_12   # pattern1
-/**/2025_12/  # pattern2
+/**/2025_12   # 模式1
+/**/2025_12/  # 模式2
 ```
 
-`/**/` is used to match any directory depth wrapping the target file or directory. In this case, `pattern1` matches both the folder and the file named `2025_12`, while `pattern2` matches only the `2025_12` directory (under `temp`).
+`/**/`用于匹配任意深度的目录层级。此时`模式1`会同时匹配名为`2025_12`的文件夹和文件，而`模式2`仅匹配`temp`目录下的`2025_12`文件夹。
 
-You may notice the use of `/**/`. This can be viewed as a general way to match arbitrary directory levels, but it originates from early Unix tooling. Specifically, it comes from the globbing mechanism (`/etc/glob`) used by early Linux systems and later exposed as a library function.
+你可能注意到`/**/`的使用。这可以视为匹配任意目录层级的通用方式，但其起源可追溯到早期的Unix工具链。具体来说，它源自早期Linux系统使用的通配扩展机制（`/etc/glob`），后来作为库函数对外开放。
 
-## Glob patterns
+## Glob模式
 
-The wildcard expansion performed by `/etc/glob` is known as *glob patterns*. These patterns expand wildcard expressions into a list of pathnames that match the pattern.
+由`/etc/glob`执行的通配符扩展被称为*glob模式*。这类模式能将通配表达式展开为匹配该模式的路径名列表。
 
-In general, glob patterns include three basic forms: `*`, `?`, and `[`.
+通常，glob模式包含三种基本形式：`*`、`?`和`[`。
 
-The asterisk is widely used across filesystems. Simply put, `*` matches any sequence of characters except path separators (slashes `/`, and backslashes `\` on Windows). The double asterisk `**` is used to recursively match directories under the current directory.
+星号在文件系统中被广泛使用。简而言之，`*`匹配除路径分隔符（斜杠`/`，Windows中反斜杠`\`）外的任意字符序列。双星号`**`用于递归匹配当前目录下的所有目录。
 
-For example, in `.gitignore`, we can write:
+例如在`.gitignore`中可写作：
 
 ```gitignore
-**/*/2025_12    # before 2025_12 there must be at least one parent folder
-**/2025_12      # match any directory or file named 2025_12, same as `2025_12`
-**/**/2025_12   # no additional restriction; effectively redundant
+**/*/2025_12    # 2025_12前必须至少存在一层父文件夹
+**/2025_12      # 匹配任意名为2025_12的目录或文件，等同于`2025_12`
+**/**/2025_12   # 无额外限制，实际上冗余
 ```
 
-The Gitignore documentation explains that by specifying a pattern like `a/x/b`, we are effectively constraining the directory depth compared to a free `**`.
+Gitignore文档说明，通过指定`a/x/b`这类模式，我们实际上比自由使用`**`增加了目录层级的限制。
 
-Based on this, we can quickly understand the difference between two seemingly similar patterns in `.gitignore`: `/temp` and `temp`.
+基于此，我们可以快速理解`.gitignore`中两个看似相似模式的区别：`/temp`与`temp`。
 
-Since `temp` is neither a wildcard nor ends with `/`, it matches all files and directories named `temp` at any level. In contrast, `/temp` is treated as a path rather than a general pattern. According to the documentation:
+由于`temp`既非通配符也非以`/`结尾，它会匹配所有层级的同名文件和目录。而`/temp`被视为路径而非通用模式。根据文档说明：
 
-> If there is a separator at the beginning or middle (or both) of the pattern, then the pattern is relative to the directory level of the particular `.gitignore` file itself. Otherwise, the pattern may also match at any level below the `.gitignore` level.
+> 如果模式开头或中间（或两者）存在分隔符，则该模式相对于特定`.gitignore`文件所在的目录层级。否则，模式也可能匹配`.gitignore`层级之下的任意层级。
 
-As a result, `/temp` only ignores the `temp` directory located at the repository root. This is why only the root-level `temp` folder is ignored in the following example:
+因此，`/temp`仅忽略仓库根目录下的`temp`目录。这正是下例中仅根级`temp`文件夹被忽略的原因：
 
 ![](https://cfr2-img.flynncao.uk/202602082253437.png)
 
-Now consider a more subtle case: what if we want to ignore all `temp` folders *except* the one at the repository root? This can also be achieved using wildcard patterns.
+现在考虑更微妙的情况：如果我们想忽略所有`temp`文件夹，*除了*仓库根目录的那个呢？这同样可以通过通配模式实现。
 
 `*/temp`
-Since `*` matches any single directory name, this pattern requires at least one parent directory. However, it becomes a global match, so both `node/node18/temp` and `node/temp` will be ignored. This is not ideal.
+由于`*`匹配任意单层目录名，该模式要求至少存在一层父目录。但这会变成全局匹配，导致`node/node18/temp`和`node/temp`都被忽略，并不理想。
 
 `**/temp`
-`**` matches any path, including the root level. This again ignores the root `temp`, which we want to keep.
+`**`匹配包括根层级在内的任意路径。这又会忽略我们想要保留的根级`temp`。
 
 `**/**/temp`
-This is effectively the same as `**/temp` and adds no meaningful constraint.
+这实际上等同于 `**/temp`，并未增加有意义的限制条件。
 
 `**/*/temp`
-This is the pattern we want. By forcing at least one directory level before `temp`, only `temp` directories wrapped by another folder are matched, while the root-level `temp` is excluded. Conceptually, this is different from `/**/*/temp`, but in practice they achieve the same result (and I recommend using `/**/*/temp` for clarity).
+这才是我们需要的模式。通过强制在 `temp` 前至少存在一个目录层级，只有被另一个文件夹包裹的 `temp` 目录会被匹配，而根层级的 `temp` 则被排除。从概念上讲，这与 `/**/*/temp` 不同，但在实践中它们能达到相同效果（为清晰起见，我推荐使用 `/**/*/temp`）。
 
-## How to parse paths in Node.js
+## 如何在 Node.js 中解析路径
 
-If you are a frontend developer today, with powerful bundlers like Vite and Rollup, you are less likely to encounter path-related import issues compared to the Webpack era. Still, path handling can produce subtle and sometimes confusing behavior.
+对于当今的前端开发者而言，借助 Vite 和 Rollup 等强大的打包工具，相比 Webpack 时代，遇到路径相关导入问题的可能性已大大降低。然而，路径处理仍可能产生微妙且有时令人困惑的行为。
 
-Consider the following example. Given the same working directory, only `path1` and `path4` appear to work as expected:
+考虑以下示例。在相同工作目录下，只有 `path1` 和 `path4` 似乎按预期工作：
 
 ```javascript
-const folderPath = './dummy_folder' // success
-const folderPath2 = '/dummy_folder' // seemingly failed
-const folderPath3 = '\\dummy_folder' // seemingly failed
-const folderPath4 = '.\\dummy_folder' // success
+const folderPath = './dummy_folder' // 成功
+const folderPath2 = '/dummy_folder' // 看似失败
+const folderPath3 = '\\dummy_folder' // 看似失败
+const folderPath4 = '.\\dummy_folder' // 成功
 
 try {
   const folderPath = '.\\dummy_folder2'
@@ -99,42 +100,42 @@ try {
     fs.mkdirSync(folderPath)
   }
   else {
-    console.log('Folder already exists.')
+    console.log('文件夹已存在。')
   }
 }
 catch (error) {
-  console.error('Error creating folder:', error)
+  console.error('创建文件夹时出错：', error)
 }
 ```
 
-But did `path2` and `path3` really fail? No error was logged, and when you re-run the script, the system reports “Folder already exists.” This seems strange at first. To understand what is happening, we need to look at how Windows resolves paths.
+但 `path2` 和 `path3` 真的失败了吗？没有错误被记录，当你重新运行脚本时，系统会报告“文件夹已存在”。这起初看起来很奇怪。要理解发生了什么，我们需要了解 Windows 如何解析路径。
 
-> On Windows, `/dummyFolder` and `\\dummyFolder` are treated as *drive-relative* paths. The actual location depends on the current working directory, which can be inspected using `process.cwd()`. If the script is executed from drive `D:`, the folder will be created under `D:\dummyFolder`.
+> 在 Windows 上，`/dummyFolder` 和 `\\dummyFolder` 被视为*驱动器相对*路径。实际位置取决于当前工作目录，可通过 `process.cwd()` 查看。如果脚本是从 `D:` 驱动器执行的，文件夹将在 `D:\dummyFolder` 下创建。
 
 ![](https://cfr2-img.flynncao.uk/202602082253501.png)
 
-The folder *was* successfully created. However, `/` is not a universal indicator of the filesystem root across operating systems. Instead, it is interpreted according to OS-specific path semantics. This is why, when interacting with files in a project codebase using `fs` or `node:fs`, relative paths are generally safer.
+文件夹*确实*成功创建了。然而，`/` 并非跨操作系统的通用文件系统根目录指示符，而是根据操作系统特定的路径语义进行解释。这就是为什么在使用 `fs` 或 `node:fs` 与项目代码库中的文件交互时，相对路径通常更安全。
 
-If you really want to create folders using absolute paths, only certain formats behave as expected. Other strings may still succeed, but produce unintended results:
+如果你确实想使用绝对路径创建文件夹，只有某些格式会按预期工作。其他字符串可能仍会成功，但会产生意想不到的结果：
 
 ```js
-fs.mkdirSync('\\home\\flynncao\\code\\tommyRepo') // success, but creates a folder literally named '\home\flynncao\code\tommyRepo'
-fs.mkdirSync('/home/flynncao/code/tommyRepo') // success, creates 'tommyRepo'
-fs.mkdirSync('\home\flynncao\code\tommyRepo') // success, but not as intended
+fs.mkdirSync('\\home\\flynncao\\code\\tommyRepo') // 成功，但创建了一个字面名为 '\home\flynncao\code\tommyRepo' 的文件夹
+fs.mkdirSync('/home/flynncao/code/tommyRepo') // 成功，创建 'tommyRepo'
+fs.mkdirSync('\home\flynncao\code\tommyRepo') // 成功，但不符合预期
 ```
 
-Because PowerShell and other Windows shells accept both `\\` and `/` as path separators, both of the following work as expected:
+因为 PowerShell 和其他 Windows shell 接受 `\\` 和 `/` 作为路径分隔符，所以以下两种方式都能按预期工作：
 
 ```js
 fs.mkdirSync('C:/code/tommyRepo')
 fs.mkdirSync('C:\\code\\tommyRepo')
 ```
 
-## Python and cross-OS solutions
+## Python 与跨操作系统解决方案
 
-Python faces the same cross-OS path issues as Node.js, but its standard library provides clearer abstractions that help avoid many common pitfalls. The core issue is the same: **path resolution depends on both the operating system and the current working directory (CWD)**.
+Python 面临与 Node.js 相同的跨操作系统路径问题，但其标准库提供了更清晰的抽象，有助于避免许多常见陷阱。核心问题相同：**路径解析既依赖于操作系统，也依赖于当前工作目录（CWD）**。
 
-By default, Python resolves *relative paths* against the **current working directory**, not the location of the script itself. Historically, `os.path` has been used for path manipulation:
+默认情况下，Python 根据**当前工作目录**解析*相对路径*，而不是脚本本身的位置。历史上，`os.path` 被用于路径操作：
 
 ```py
 print(os.getcwd())  # D:\flynncao\pathpath\py
@@ -143,31 +144,31 @@ print(__file__)     # D:\flynncao\pathpath\py\modules\utils.py
 targetPath = os.path.join("a", "b", "c")
 print(targetPath)   # a\b\c
 os.makedirs(targetPath)
-# creates: D:\flynncao\pathpath\py\a\b\c
+# 创建：D:\flynncao\pathpath\py\a\b\c
 ```
 
-Note that the script file path and the working directory are **not necessarily the same**. Functions like `os.makedirs()` operate strictly relative to the **working directory** (i.e., where the Python interpreter is launched), not the script’s location.
+请注意，脚本文件路径和工作目录**不一定相同**。像 `os.makedirs()` 这样的函数严格相对于**工作目录**（即启动 Python 解释器的位置）操作，而不是脚本的位置。
 
-To handle cross-platform paths more safely and avoid string-level bugs (such as incorrect path separators like `\` vs `/`), modern Python code should prefer `pathlib`:
+为了更安全地处理跨平台路径并避免字符串级别的错误（例如错误的路径分隔符如 `\` 与 `/`），现代 Python 代码应优先使用 `pathlib`：
 
 ```py
 from pathlib import Path
 
 targetPath = Path("a") / "b" / "c"
 targetPath.mkdir()
-# creates: D:\flynncao\pathpath\py\a\b\c
+# 创建：D:\flynncao\pathpath\py\a\b\c
 ```
 
-However, `pathlib` does not eliminate all platform-specific behavior. Similar to what we observed in the Node.js environment, expressions like `Path("/data/output").mkdir()` behave very differently on Windows and Linux.
+然而，`pathlib` 并未消除所有平台相关的行为。类似于我们在 Node.js 环境中观察到的情况，像 `Path("/data/output").mkdir()` 这样的表达式在 Windows 和 Linux 系统上的表现差异显著。
 
-In short, this mirrors how Windows and POSIX systems interpret a leading forward slash when constructing paths:
+简而言之，这反映了 Windows 和 POSIX 系统在构建路径时对前导正斜杠的不同解读：
 
 * `Path("data/summary") / "2025"`
-   → Creates folders under the working directory
+   → 在工作目录下创建文件夹
 * `Path("/data/summary") / "2025"`
-   → Refers to an absolute system path; on most systems, creation will fail due to insufficient permissions
+   → 指向一个绝对系统路径；在大多数系统上，由于权限不足，创建操作将会失败
 
-## References
+## 参考资料
 
 https://git-scm.com/docs/gitignore
 
