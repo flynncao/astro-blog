@@ -1,8 +1,8 @@
 ---
 title: ESM-only在node22和TypeScript5环境下的实现
 published: 2025-08-23T23:43:20.864Z
+updated: 2026-02-27T00:32:30.000Z
 description: ''
-updated: ''
 tags:
   - esm
   - node
@@ -21,7 +21,7 @@ lang: zh
 
 这里只有一个字段需要注意：
 ```json
-"type": "module" // or "commonjs" or " " 
+"type": "module" // or "commonjs" or " "
 ```
  使用 "type: module" 会：
 
@@ -35,11 +35,9 @@ lang: zh
 
 不使用 "type" 字段，那么默认是 "type: commonjs"
 
+ > 如果package.json使用`json5` 格式那么可以在脚本字段后添加`//`注释
 
- > 如果使用`json5` 格式那么可以在脚本字段后添加`//`注释
-
-我们这篇文章需要你先开启`"type": "module"`。但这不意味着你不能用require()语法导入esm， 这在node v22.12.0 以后是默认支持的，先前的node版本需要追加`--experimental-vm-modules` flag。
-
+我们这篇文章需要你先在`package.json`中添加这一行`"type": "module"`。 这也意味着你只能使用`import/export`语法来导入导出模块， node v22.12.0 以后默认支持使用esm语法（import/export） 加载esm和nodejs两种模块编写的代码（例如jest并不是由esm编写的），先前的node环境也支持，但需要在运行node时添加`--experimental-vm-modules` 。
 
 ## Typescript5.8
 
@@ -50,7 +48,6 @@ lang: zh
 - lib：type-checking相关，例如你的代码需要在浏览器中运行，那么想要 `window` 等对象在IDE也能被识别不报错，这里就要叠加上上 `DOM`  。
     > 一切原生不支持Typescript的库仍需要实用`npm add -D @types/eslint` 等形式手动安装types （如何解决“老项目的导入地狱”? 请待下回分解）
 - moduleresolution: 控制TS在编译过程如何在模块里寻找源文件（算法），node16, node22必须显示规定file extension无论js/ts, 如果切换为bundler,一般都会给通过如tsup和vite（这里会要求你把module也改为esnext等）
-  
 
 ## jest(ts-jest)
 
@@ -72,7 +69,6 @@ ts-jest给出了如下直到
     "noEmit": true,
 ```
 
-
 这时候我们可以开始写测试npm script了，按照（1）的要求
 
 请使用`npm`或者`pnpm`安装`cross-env`包后使用
@@ -81,7 +77,7 @@ ts-jest给出了如下直到
     "test:coverage": "cross-env  NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\"  jest --coverage "
 ```
 
-》 
+》
 
 最终结果 unit test可以正常进行、coverage可以计算，也能正常使用typescript编写代码和测试文件、导入导出esm模块。
 
