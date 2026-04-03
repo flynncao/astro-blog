@@ -9,6 +9,10 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 // Enable glass effect mode for light theme (true) or sparkle mode (false)
 const GLASS_MODE = false
 
+export type RainStyleType = 'glass' | 'straight'
+// Switch between the original "glass ink" style and the "straight falling drops" style
+const RAIN_STYLE: RainStyleType = 'glass'
+
 // Show rain effect in dark theme
 const RAIN_IN_DARK_THEME = true
 
@@ -155,30 +159,75 @@ onMounted(() => {
   const rainIntensity = isLightTheme ? 0.1 : 0.35
 
   // Shader material
-  material = new THREE.ShaderMaterial({
-    transparent: true,
-    blending: useGlassMode ? THREE.NormalBlending : THREE.AdditiveBlending,
-    uniforms: {
-      iResolution: { value: new THREE.Vector3() },
-      iTime: { value: 0 },
-      iMouse: { value: new THREE.Vector3(0, 0, 0) },
-      iChannel0: { value: bgTexture },
-      u_rain: { value: rainIntensity },
-      u_pulse: { value: 0.0 },
-      u_pulse_amp: { value: 0.0 },
-      u_is_decrease: { value: 0.0 },
-      u_disable_lightning: { value: 0.0 },
-      u_speed: { value: 1.0 },
-      u_story: { value: 0.0 },
-      u_rain_color: { value: themeColors.rainColor },
-      u_rain_opacity: { value: themeColors.rainOpacity },
-      u_is_light_theme: { value: useGlassMode ? 1.0 : 0.0 },
-    },
-    vertexShader: `
+  const straightRainFragmentShader = `
+      precision highp float;
       varying vec2 vUv;
-      void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
-    `,
-    fragmentShader: `
+
+      uniform vec3 iResolution;
+      uniform float iTime;
+      uniform float u_rain;
+      uniform float u_speed;
+      uniform vec3 u_rain_color;
+      uniform float u_rain_opacity;
+      uniform float u_is_light_theme;
+
+      // Hash function for random noise
+      float hash12(vec2 p) {
+        vec3 p3  = fract(vec3(p.xyx) * .1031);
+        p3 += dot(p3, p3.yzx + 33.33);
+        return fract((p3.x + p3.y) * p3.z);
+      }
+
+      void main(){
+        vec2 uv = vUv;
+        // Adjust for aspect ratio
+        uv.x *= iResolution.x / iResolution.y;
+        
+        float t = iTime * max(0.1, u_speed) * 2.0;
+        
+        float rainAmount = u_rain;
+        float alpha = 0.0;
+        
+        // 3 layers of rain for depth
+        for (float i = 1.0; i <= 3.0; i++) {
+            // Scale UV for different layers (further = smaller/denser)
+            vec2 st = uv * vec2(80.0 * i, 5.0 * i);
+            
+            // Scroll downwards
+            st.y += t * (6.0 / i); // Closer moves faster
+            
+            // Slant the rain slightly
+            st.x += st.y * 0.15;
+            
+            vec2 id = floor(st);
+            vec2 f = fract(st);
+            
+            float n = hash12(id);
+            
+            // Randomly spawn a raindrop based on intensity
+            if (n < rainAmount * 0.8) {
+                // X axis: very thin line
+                float streakX = smoothstep(0.45, 0.5, f.x) * smoothstep(0.55, 0.5, f.x);
+                
+                // Y axis: faded tail, sharp head
+                float length = 0.3 + hash12(id + vec2(1.0)) * 0.5; // Random length
+                float streakY = smoothstep(1.0, 1.0 - length, f.y); // Fading tail
+                streakY *= smoothstep(0.0, 0.1, f.y); // Sharp head
+                
+                alpha += streakX * streakY * (1.0 / i); // Further drops are fainter
+            }
+        }
+        
+        // Boost alpha slightly and apply opacity
+        alpha = clamp(alpha * u_rain_opacity * 5.0, 0.0, 1.0);
+        
+        vec3 finalColor = u_rain_color;
+
+        gl_FragColor = vec4(finalColor, alpha);
+      }
+  `
+
+  const glassRainFragmentShader = `
       precision highp float;
       varying vec2 vUv;
 
@@ -329,7 +378,32 @@ onMounted(() => {
 
         gl_FragColor = vec4(finalColor, finalAlpha);
       }
+  `
+
+  material = new THREE.ShaderMaterial({
+    transparent: true,
+    blending: useGlassMode ? THREE.NormalBlending : THREE.AdditiveBlending,
+    uniforms: {
+      iResolution: { value: new THREE.Vector3() },
+      iTime: { value: 0 },
+      iMouse: { value: new THREE.Vector3(0, 0, 0) },
+      iChannel0: { value: bgTexture },
+      u_rain: { value: rainIntensity },
+      u_pulse: { value: 0.0 },
+      u_pulse_amp: { value: 0.0 },
+      u_is_decrease: { value: 0.0 },
+      u_disable_lightning: { value: 0.0 },
+      u_speed: { value: 1.0 },
+      u_story: { value: 0.0 },
+      u_rain_color: { value: themeColors.rainColor },
+      u_rain_opacity: { value: themeColors.rainOpacity },
+      u_is_light_theme: { value: useGlassMode ? 1.0 : 0.0 },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
     `,
+    fragmentShader: RAIN_STYLE === 'straight' ? straightRainFragmentShader : glassRainFragmentShader,
   })
 
   const quad = new THREE.Mesh(geometry, material)
