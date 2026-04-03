@@ -30,6 +30,45 @@ pnpm astro check  # TypeScript checking
 
 ## Architecture
 
+### Project Structure
+
+```
+src/
+├── components/           # UI components
+│   ├── Comment/          # Comment providers (Giscus, Twikoo, Waline)
+│   └── Widgets/          # Interactive widgets (TOC, ImageZoom, CodeCopyButton, etc.)
+├── content/              # Astro Collections (content managed by Zod schema)
+│   ├── posts/            # Blog posts (.md, .mdx)
+│   │   └── _images/      # Post images organized by subdirectory
+│   └── about/            # About pages
+├── i18n/                 # Internationalization
+│   ├── config.ts         # Locale mappings for routing and comments
+│   ├── ui.ts             # UI text translations
+│   ├── lang.ts           # Language detection utilities
+│   └── path.ts           # i18n path helpers
+├── layouts/              # Page layouts
+│   ├── Layout.astro      # Base layout
+│   ├── Head.astro        # Meta tags and head elements
+│   └── NewPost.astro     # Blog post layout
+├── pages/                # File-based routing
+│   ├── [lang]/           # Localized routes (rss.xml, atom.xml)
+│   ├── og/               # Open Graph image generation
+│   ├── [...index].astro  # Home page (catch-all for i18n)
+│   ├── [...posts_slug].astro  # Blog post pages
+│   ├── [...about].astro  # About pages
+│   ├── [...tags].astro   # Tags listing
+│   └── projects.astro    # Projects page
+├── plugins/              # Custom remark/rehype plugins for Markdown
+├── styles/               # CSS modules
+│   ├── global.css        # Global styles
+│   ├── markdown.css      # Markdown typography
+│   ├── font.css          # Font definitions
+│   └── transition.css    # View transition animations
+├── types/                # TypeScript type definitions
+├── utils/                # Utility functions (content, feed, page helpers)
+├── config.ts             # Central theme configuration
+└── content.config.ts     # Astro Collections schema (Zod)
+```
 ### Multi-language System
 - **Supported locales   **: `de`, `en`, `es`, `fr`, `ja`, `ko`, `pl`, `pt`, `ru`, `zh`, `zh-tw`
 - **Routing**: Dynamic routes use `[lang]` prefix (e.g., `/en/`, `/zh/`)
@@ -97,46 +136,6 @@ Each provider has its own locale mapping in [src/i18n/config.ts](src/i18n/config
 - **LQIP**: Low Quality Image Placeholders generated during build
 - **Image optimization**: Remote pattern support for image hosts
 
-## Project Structure
-
-```
-src/
-├── components/           # UI components
-│   ├── Comment/          # Comment providers (Giscus, Twikoo, Waline)
-│   └── Widgets/          # Interactive widgets (TOC, ImageZoom, CodeCopyButton, etc.)
-├── content/              # Astro Collections (content managed by Zod schema)
-│   ├── posts/            # Blog posts (.md, .mdx)
-│   │   └── _images/      # Post images organized by subdirectory
-│   └── about/            # About pages
-├── i18n/                 # Internationalization
-│   ├── config.ts         # Locale mappings for routing and comments
-│   ├── ui.ts             # UI text translations
-│   ├── lang.ts           # Language detection utilities
-│   └── path.ts           # i18n path helpers
-├── layouts/              # Page layouts
-│   ├── Layout.astro      # Base layout
-│   ├── Head.astro        # Meta tags and head elements
-│   └── NewPost.astro     # Blog post layout
-├── pages/                # File-based routing
-│   ├── [lang]/           # Localized routes (rss.xml, atom.xml)
-│   ├── og/               # Open Graph image generation
-│   ├── [...index].astro  # Home page (catch-all for i18n)
-│   ├── [...posts_slug].astro  # Blog post pages
-│   ├── [...about].astro  # About pages
-│   ├── [...tags].astro   # Tags listing
-│   └── projects.astro    # Projects page
-├── plugins/              # Custom remark/rehype plugins for Markdown
-├── styles/               # CSS modules
-│   ├── global.css        # Global styles
-│   ├── markdown.css      # Markdown typography
-│   ├── font.css          # Font definitions
-│   └── transition.css    # View transition animations
-├── types/                # TypeScript type definitions
-├── utils/                # Utility functions (content, feed, page helpers)
-├── config.ts             # Central theme configuration
-└── content.config.ts     # Astro Collections schema (Zod)
-```
-
 ## Key Files
 
 | File | Purpose |
@@ -148,7 +147,7 @@ src/
 | [src/types/index.d.ts](src/types/index.d.ts) | ThemeConfig type definitions |
 | [src/plugins/](src/plugins/) | Custom remark/rehype plugins |
 
-## Development Notes
+## Important Notes
 
 - **Package manager**: Uses pnpm 10.13.1
 - **Pre-commit hooks**: Runs ESLint via lint-staged on `{js,ts,astro}` files
@@ -157,8 +156,9 @@ src/
 - **Icons**: Uses Iconify with multiple icon sets configured
 - **Content schema**: Frontmatter validation via Zod in `src/content/config.ts` (Astro Collections)
 - **Page routing**: Uses Astro's file-based routing with `[...slug]` catch-all routes for i18n
+- **Security**: Never commit `.env` and `.secret` files.
 
-## Creating Content
+### When Creating Post
 
 - **Post template**: Use `@template.md` at project root as the starting point for all new posts
 - **Multilingual workflow**: When creating a new post:
