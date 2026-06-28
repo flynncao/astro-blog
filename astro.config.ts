@@ -3,6 +3,7 @@ import partytown from '@astrojs/partytown'
 import sitemap from '@astrojs/sitemap'
 import vue from '@astrojs/vue'
 import Compress from 'astro-compress'
+import purgecss from 'astro-purgecss'
 import { defineConfig } from 'astro/config'
 import rehypeKatex from 'rehype-katex'
 import rehypeSlug from 'rehype-slug'
@@ -42,30 +43,23 @@ export default defineConfig({
     })),
     defaultLocale,
   },
-  integrations: [
-    UnoCSS({
-      injectReset: true,
-    }),
-    mdx(),
-    partytown({
-      config: {
-        forward: ['dataLayer.push', 'gtag'],
-      },
-    }),
-    sitemap(),
-    Compress({
-      CSS: true,
-      HTML: true,
-      Image: false,
-      JavaScript: true,
-      SVG: false,
-    }),
-    vue(
-      // {
-      //   appEntrypoint: './src/pages/_app.vue',
-      // },
-    ),
-  ],
+  integrations: [UnoCSS({
+    injectReset: true,
+  }), mdx(), partytown({
+    config: {
+      forward: ['dataLayer.push', 'gtag'],
+    },
+  }), sitemap(), Compress({
+    CSS: true,
+    HTML: true,
+    Image: false,
+    JavaScript: true,
+    SVG: false,
+  }), vue(
+    // {
+    //   appEntrypoint: './src/pages/_app.vue',
+    // },
+  ), purgecss()],
   markdown: {
     remarkPlugins: [
       remarkDirective,
