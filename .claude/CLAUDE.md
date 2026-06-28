@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Retypeset** is a typography-focused static blog theme built on Astro 5. It emphasizes print-inspired aesthetics, multi-language support, and rich content processing. The theme uses Astro Collections for content management with Zod validation.
 
+## Rule Files
+
+See additional guidance in:
+- [CODE_STYLE.md](CODE_STYLE.md) - Code style, naming conventions, file organization
+- [SECURITY.md](SECURITY.md) - Secrets management, security practices
+- [TESTING.md](TESTING.md) - Type checking, linting, build verification
+- [content-workflow.md](content-workflow.md) - When creating new post or blog
+
 ## Commands
 
 ```bash
@@ -69,12 +77,17 @@ src/
 ├── config.ts             # Central theme configuration
 └── content.config.ts     # Astro Collections schema (Zod)
 ```
+
 ### Multi-language System
-- **Supported locales   **: `de`, `en`, `es`, `fr`, `ja`, `ko`, `pl`, `pt`, `ru`, `zh`, `zh-tw`
+- **Supported locales**: `de`, `en`, `es`, `fr`, `ja`, `ko`, `pl`, `pt`, `ru`, `zh`, `zh-tw`
 - **Routing**: Dynamic routes use `[lang]` prefix (e.g., `/en/`, `/zh/`)
 - **Configuration**: Set default locale in [src/config.ts](src/config.ts#L46) (`global.locale`) and additional locales in `global.moreLocales`
 - **UI translations**: Edit [src/i18n/ui.ts](src/i18n/ui.ts) for translated interface text
 - **Comment i18n**: Locale mappings for Giscus, Twikoo, and Waline in [src/i18n/config.ts](src/i18n/config.ts)
+
+#### Adding new language
+
+- When adding a new language to this project, you must also update the @README.md ##Demo, adding md link to the end of the list like: `- [Retipografía](https://retypeset.radishzz.cc/es/)`
 
 ### Content System
 - **Posts**: [src/content/posts/](src/content/posts/) - Blog posts with frontmatter validation
