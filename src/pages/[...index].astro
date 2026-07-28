@@ -35,7 +35,7 @@ const pinnedPosts = await getPinnedPosts(lang)
 const postsByYear = await getPostsByYear(lang)
 ---
 
-<Layout>
+<Layout showRainEffect={true}>
   <!-- Pinned Posts -->
   {pinnedPosts.length > 0 && (
     <section class="mb-7.5">
