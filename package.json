@@ -24,7 +24,7 @@
     "@astrojs/sitemap": "^3.4.1",
     "@astrojs/vue": "^5.1.1",
     "@unocss/preset-icons": "^66.5.4",
-    "@vueuse/core": "^13.5.0",
+    "@vueuse/core": "^15.0.0",
     "@waline/client": "^3.6.0",
     "astro": "^5.12.3",
     "astro-compress": "^2.3.8",
