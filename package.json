@@ -18,11 +18,11 @@
   },
   "dependencies": {
     "@astrojs/db": "^0.14.10",
-    "@astrojs/mdx": "^4.3.1",
+    "@astrojs/mdx": "^8.0.0",
     "@astrojs/partytown": "^2.1.4",
     "@astrojs/rss": "^4.0.11",
     "@astrojs/sitemap": "^3.4.1",
-    "@astrojs/vue": "^5.1.1",
+    "@astrojs/vue": "^7.0.0",
     "@unocss/preset-icons": "^66.5.4",
     "@vueuse/core": "^13.5.0",
     "@waline/client": "^3.6.0",
